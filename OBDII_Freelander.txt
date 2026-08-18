@@ -1,0 +1,158 @@
+#include <TFT_eSPI.h>
+#include "BluetoothSerial.h"
+#include "SD.h"
+#include <TinyGPS++.h>
+
+TFT_eSPI tft = TFT_eSPI();
+BluetoothSerial SerialBT;
+TinyGPSPlus gps;
+
+// Hardware CYD
+#define SD_CS 5
+#define TFT_BL 21
+#define LDR_PIN 34
+
+// Configurações
+uint8_t address[] = {0x00, 0x0D, 0x18, 0x3A, 0x67, 0x89};
+unsigned long lastSD = 0;
+int ciclo = 0;
+bool sdOk = false;
+
+// Variáveis de Dados
+float volt = 0, boost = 0;
+int rpm = 0, kmh = 0, agua = 0, fuel = 0;
+
+void setup() {
+  // A Serial padrão (9600) lê o GPS pelo conector de 4 pinos
+  Serial.begin(9600);
+ 
+  pinMode(TFT_BL, OUTPUT); digitalWrite(TFT_BL, HIGH);
+  tft.init();
+  tft.setRotation(1);
+  tft.fillScreen(TFT_BLACK);
+  tft.drawCentreString("SISTEMA TELEMETRIA v5.0", 160, 100, 2);
+
+  delay(2000);
+
+  // Inicia SD 1GB
+  if(SD.begin(SD_CS, SPI, 4000000)) sdOk = true;
+
+  // Bluetooth Master
+  SerialBT.setPin("1234", 4);
+  SerialBT.begin("Landy_Dash", true);
+
+  if (SerialBT.connect(address)) {
+    SerialBT.println("ATZ"); delay(500);
+    SerialBT.println("ATE0"); delay(300);
+    SerialBT.println("ATSP0"); delay(300);
+    tft.fillScreen(TFT_BLACK);
+    desenhaLinhasGrade();
+  } else {
+    ESP.restart();
+  }
+}
+
+void loop() {
+  // --- 1. LEITURA DO GPS (CONECTOR 4 PINOS) ---
+  while (Serial.available() > 0) {
+    gps.encode(Serial.read());
+  }
+
+  if (SerialBT.connected()) {
+   
+    // --- 2. COLETA DE DADOS OBD2 (PRIORIDADE) ---
+    SerialBT.println("010C"); delay(60); // RPM
+    rpm = converterRPM(filtrarHex(lerBT()));
+   
+    SerialBT.println("010B"); delay(60); // TURBO
+    String pHex = filtrarHex(lerBT());
+    int pMAP = pHex.indexOf("410B");
+    if (pMAP >= 0) boost = (strtol(pHex.substring(pMAP+4, pMAP+6).c_str(), NULL, 16) - 101) / 100.0;
+    if (boost < 0) boost = 0;
+
+    if (ciclo % 2 == 0) {
+       SerialBT.println("010D"); delay(60); // VELOCIDADE CARRO
+       kmh = converterSimples(filtrarHex(lerBT()), "410D");
+       SerialBT.println("ATRV"); delay(60); // VOLTS
+       volt = filtrarNumeros(lerBT()).toFloat();
+    }
+   
+    if (ciclo % 10 == 0) {
+       SerialBT.println("0105"); delay(60); // AGUA
+       agua = converterSimples(filtrarHex(lerBT()), "4105") - 40;
+       SerialBT.println("012F"); delay(60); // FUEL
+       fuel = (converterSimples(filtrarHex(lerBT()), "412F") * 100) / 255;
+    }
+
+    ciclo++; if(ciclo > 100) ciclo = 0;
+
+    // --- 3. RENDERIZAÇÃO DA GRADE 3x2 ---
+    tft.setTextPadding(100);
+    tft.setTextDatum(MC_DATUM);
+
+    // Q1: RPM (Verde)
+    tft.setTextColor(TFT_GREEN, TFT_BLACK);
+    tft.drawNumber(rpm, 53, 50, 4);
+    tft.drawString("RPM", 53, 90, 2);
+
+    // Q2: TURBO (Ciano)
+    tft.setTextColor(TFT_CYAN, TFT_BLACK);
+    tft.drawFloat(boost, 2, 160, 50, 4);
+    tft.drawString("TURBO", 160, 90, 2);
+
+    // Q3: VELOCIDADE (Branco = GPS se fixado, senão Carro)
+    int velExibir = (gps.speed.kmph() > 2) ? (int)gps.speed.kmph() : kmh;
+    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    tft.drawNumber(velExibir, 266, 50, 4);
+    tft.drawString(gps.speed.kmph() > 2 ? "GPS km/h" : "OBD km/h", 266, 90, 2);
+
+    // Q4: AGUA (Azul/Vermelho)
+    tft.setTextColor(agua > 100 ? TFT_RED : 0x5DFF, TFT_BLACK);
+    tft.drawNumber(agua, 53, 170, 4);
+    tft.drawString("AGUA C", 53, 210, 2);
+
+    // Q5: FUEL (Amarelo)
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+    tft.drawNumber(fuel, 160, 170, 4);
+    tft.drawString("FUEL %", 160, 210, 2);
+
+    // Q6: VOLTS (Ouro)
+    tft.setTextColor(TFT_ORANGE, TFT_BLACK);
+    tft.drawFloat(volt, 1, 266, 170, 4);
+    tft.drawString("VOLTS", 266, 210, 2);
+
+    // --- 4. RODAPÉ DE LOCALIZAÇÃO ---
+    if (gps.location.isValid()) {
+      tft.setTextSize(1); tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+      tft.setCursor(10, 230);
+      tft.printf("LAT: %.5f  LNG: %.5f  SAT: %d", gps.location.lat(), gps.location.lng(), gps.satellites.value());
+    }
+
+    // --- 5. LOG NO SD (COM GPS) ---
+    if (sdOk && (millis() - lastSD > 5000)) {
+      File f = SD.open("/telemetria.csv", FILE_APPEND);
+      if(f) {
+        f.printf("%lu;%d;%.2f;%d;%d;%d;%.1f;%.6f;%.6f\n",
+                 millis()/1000, rpm, boost, velExibir, agua, fuel, volt, gps.location.lat(), gps.location.lng());
+        f.close(); lastSD = millis();
+      }
+    }
+  } else {
+    ESP.restart();
+  }
+}
+
+void desenhaLinhasGrade() {
+  uint16_t corG = 0x7BEF;
+  tft.drawFastVLine(106, 0, 240, corG);
+  tft.drawFastVLine(213, 0, 240, corG);
+  tft.drawFastHLine(0, 120, 320, corG);
+}
+
+// Funções de apoio
+String lerBT() { String r = ""; unsigned long t = millis(); while (millis() - t < 150) { while (SerialBT.available()) r += (char)SerialBT.read(); } return r; }
+String filtrarNumeros(String s) { String r = ""; for (uint16_t i=0; i<s.length(); i++) { if (isDigit(s[i]) || s[i]=='.') r += s[i]; } return r; }
+String filtrarHex(String s) { String r = ""; for (uint16_t i=0; i<s.length(); i++) { if (isHexadecimalDigit(s[i])) r += s[i]; } return r; }
+int converterRPM(String hex) { int p = hex.indexOf("410C"); if (p >= 0 && hex.length() >= p + 8) { long A = strtol(hex.substring(p+4, p+6).c_str(), NULL, 16); long B = strtol(hex.substring(p+6, p+8).c_str(), NULL, 16); return ((A * 256) + B) / 4; } return 0; }
+int converterSimples(String hex, String pid) { int p = hex.indexOf(pid); if (p >= 0 && hex.length() >= p + 6) return strtol(hex.substring(p+4, p+6).c_str(), NULL, 16); return 0; }
+
