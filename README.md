@@ -1,4 +1,4 @@
-<img width="1598" height="3072" alt="Track_Freelander" src="https://github.com/user-attachments/assets/b3fa5977-0cea-4749-bc14-8773b1c06a87" />
+<img width="600" alt="Track_Freelander" src="https://github.com/user-attachments/assets/b3fa5977-0cea-4749-bc14-8773b1c06a87" />
 # OBD-II-Telemetry-Freelander2
 OBD-II vehicle telemetry system using ESP32, Bluetooth ELM327, and GPS Neo-6M. Real-time monitoring of RPM, boost, speed, coolant temp, and fuel level.
 
