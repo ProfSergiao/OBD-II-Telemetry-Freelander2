@@ -106,29 +106,22 @@ Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real d
 ---
 
 ##  Como Funciona
-┌─────────────┐ Bluetooth ┌─────────────┐
-│ Vehicle │ ◄──────────────► │ ELM327 │
-│ ECU │ │ Adapter │
-└─────────────┘ └──────┬──────
-│
-Serial Data│
-▼
-┌─────────────────┐
-│ ESP32 │
-│ (Processing) │
-└────┬──────┬─────┘
-│ │
-UART │ │ SPI
-│ │
-┌────▼──┐ └──► SD Card
-│ GPS │ (Logging)
-│Neo-6M │
-└───────┘
-│
-┌────▼────┐
-│ TFT │
-│ Display │
-└─────────
+## 🔧 Como Funciona
+
+```mermaid
+graph LR
+    A[🚗 Vehicle ECU] -->|Bluetooth| B[📡 ELM327]
+    B -->|Serial Data| C[🧠 ESP32]
+    C -->|UART| D[️ GPS Neo-6M]
+    C -->|SPI| E[💾 SD Card]
+    C -->|Display| F[ TFT 3.5]
+    
+    style A fill:#4CAF50
+    style B fill:#2196F3
+    style C fill:#FF9800
+    style D fill:#9C27B0
+    style E fill:#795548
+    style F fill:#F44336
 
 ---
 
