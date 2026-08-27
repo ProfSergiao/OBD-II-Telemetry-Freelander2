@@ -110,19 +110,18 @@ Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real d
 
 ```mermaid
 graph LR
-    A[🚗 Vehicle ECU] -->|Bluetooth| B[📡 ELM327]
-    B -->|Serial Data| C[🧠 ESP32]
-    C -->|UART| D[️ GPS Neo-6M]
-    C -->|SPI| E[💾 SD Card]
-    C -->|Display| F[ TFT 3.5]
+    A[Vehicle ECU] -->|Bluetooth| B[ELM327 Adapter]
+    B -->|Serial Data| C[ESP32 Processing]
+    C -->|UART| D[GPS Neo-6M]
+    C -->|SPI| E[SD Card]
+    C -->|Display| F[TFT 3.5 Display]
     
-    style A fill:#4CAF50
-    style B fill:#2196F3
-    style C fill:#FF9800
-    style D fill:#9C27B0
-    style E fill:#795548
-    style F fill:#F44336
-
+    style A fill:#4CAF50,stroke:#333,stroke-width:2px
+    style B fill:#2196F3,stroke:#333,stroke-width:2px
+    style C fill:#FF9800,stroke:#333,stroke-width:2px
+    style D fill:#9C27B0,stroke:#333,stroke-width:2px
+    style E fill:#795548,stroke:#333,stroke-width:2px
+    style F fill:#F44336,stroke:#333,stroke-width:2px
 ---
 
 ## 📦 Instalação e Configuração
