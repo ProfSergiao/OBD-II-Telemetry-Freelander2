@@ -106,8 +106,59 @@ Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real d
 ---
 
 ##  Como Funciona
+┌─────────────┐ Bluetooth ┌─────────────┐
+│ Vehicle │ ◄──────────────► │ ELM327 │
+│ ECU │ │ Adapter │
+└─────────────┘ └──────┬──────
+│
+Serial Data│
+▼
+┌─────────────────┐
+│ ESP32 │
+│ (Processing) │
+└────┬──────┬─────┘
+│ │
+UART │ │ SPI
+│ │
+┌────▼──┐ └──► SD Card
+│ GPS │ (Logging)
+│Neo-6M │
+└───────┘
+│
+┌────▼────┐
+│ TFT │
+│ Display │
+└─────────
 
+---
 
+## 📦 Instalação e Configuração
+
+### **Pré-requisitos**
+- Arduino IDE instalado
+- Board ESP32 configurada
+- Bibliotecas necessárias (veja `platformio.ini` ou `libraries.txt`)
+
+### **Passo a Passo**
+
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/ProfSergiao/OBD-II-Telemetry-Freelander2.git
+2. Instale as bibliotecas
+    -TFT_eSPI
+    -TinyGPSPlus
+    -SD
+    -BluetoothSerial
+3 .Configure o projeto
+    -Edite config.h com seus parâmetros (baud rate, pins, etc.)
+    -Ajuste o pareamento Bluetooth do ELM327
+4. Compile e faça upload
+   # Via Arduino IDE: Sketch → Upload
+   # Ou via PlatformIO: pio run --target upload
+5. Conecte no veículo
+    -Plugue o ELM327 na porta OBD-II (geralmente abaixo do volante)
+    -Ligue a ignição
+    - O sistema iniciará automaticamente!
 ## 📄 License
 
 MIT License - free for personal and commercial use
