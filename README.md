@@ -32,7 +32,7 @@ Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real d
 
 **Sistema instalado e operacional no Freelander 2**
 
-<img width="700" alt="Instalação no Freelander" src="https://github.com/user-attachments/assets/b3fa5977-0cea-4749-bc14-8773b1c06a87" />
+<img width="300" alt="Instalação no Freelander" src="https://github.com/user-attachments/assets/b3fa5977-0cea-4749-bc14-8773b1c06a87" />
 
 *Display integrado ao console com visualização de RPM, pressão do turbo, temperatura e voltagem*
 
