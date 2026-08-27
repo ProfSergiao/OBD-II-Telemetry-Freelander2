@@ -122,7 +122,7 @@ graph LR
     style D fill:#9C27B0,stroke:#333,stroke-width:2px
     style E fill:#795548,stroke:#333,stroke-width:2px
     style F fill:#F44336,stroke:#333,stroke-width:2px
----
+
 
 ## 📦 Instalação e Configuração
 
