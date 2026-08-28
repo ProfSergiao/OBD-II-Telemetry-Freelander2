@@ -26,7 +26,7 @@ Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real d
 
 ---
 
-## 📸 Instalação no Veículo
+##  Instalação no Veículo
 
 <div align="center">
 
@@ -42,7 +42,7 @@ Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real d
 
 ## 🔧 Funcionalidades
 
-### **📊 Leitura de PIDs SAE J1979**
+### ** Leitura de PIDs SAE J1979**
 
 | Parâmetro | PID | Descrição |
 |-----------|-----|-----------|
