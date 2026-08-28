@@ -17,12 +17,12 @@
 
 Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real do **Land Rover Freelander 2 Diesel**. A solução integra comunicação Bluetooth com adaptador ELM327, módulo GPS Neo-6M e interface gráfica TFT, proporcionando acompanhamento preciso de parâmetros críticos do motor.
 
-### ✨ Destaques do Projeto
-- ✅ **100% Open Source** - Código documentado e modular
-- ✅ **Baixo Custo** - Hardware acessível (< $50 USD)
-- ✅ **Plug & Play** - Conexão via porta OBD-II padrão
-- ✅ **Data Logging** - Gravação em SD card para análise posterior
-- ✅ **Recuperação Automática** - Watchdog e reconexão Bluetooth
+###  Destaques do Projeto
+-  **100% Open Source** - Código documentado e modular
+-  **Baixo Custo** - Hardware acessível (< $50 USD)
+-  **Plug & Play** - Conexão via porta OBD-II padrão
+-  **Data Logging** - Gravação em SD card para análise posterior
+-  **Recuperação Automática** - Watchdog e reconexão Bluetooth
 
 ---
 
@@ -46,26 +46,26 @@ Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real d
 
 | Parâmetro | PID | Descrição |
 |-----------|-----|-----------|
-| 🔄 RPM do Motor | `010C` | Rotações por minuto do motor |
+|  RPM do Motor | `010C` | Rotações por minuto do motor |
 | ️ Pressão Turbo/MAP | `010B` | Pressão absoluta do coletor |
-| 🏃 Velocidade do Veículo | `010D` | Velocidade em km/h |
+|  Velocidade do Veículo | `010D` | Velocidade em km/h |
 | ️ Temperatura do Motor | `0105` | Temperatura do líquido de arrefecimento |
-| ⛽ Nível de Combustível | `012F` | Percentual no tanque |
-| 🔋 Voltagem da Bateria | `ATRV` | Tensão do sistema elétrico |
+|  Nível de Combustível | `012F` | Percentual no tanque |
+|  Voltagem da Bateria | `ATRV` | Tensão do sistema elétrico |
 
-### **🛰️ Integração GPS (Neo-6M)**
-- 📍 Coordenadas geográficas (Lat/Long)
+### ** Integração GPS (Neo-6M)**
+-  Coordenadas geográficas (Lat/Long)
 -  Timestamp preciso por satélite
 -  Velocidade via GPS (backup)
-- 📝 Log de rotas
+-  Log de rotas
 
-### **🖥️ Interface Gráfica**
+### ** Interface Gráfica**
 - Display TFT 3.5" touchscreen (ESP32 CYD)
 - Layout 3x2 com atualização em tempo real
 - Cores contextuais por parâmetro
 - Indicadores visuais de alerta
 
-### **🛡️ Robustez**
+### ** Robustez**
 - Reconexão automática Bluetooth em caso de perda
 - Watchdog timer para recovery do sistema
 - Buffer de dados em SD card (1GB)
@@ -73,7 +73,7 @@ Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real d
 
 ---
 
-## 🧰 Hardware Utilizado
+##  Hardware Utilizado
 
 ### **Componentes Principais**
 
@@ -92,7 +92,7 @@ Sistema de telemetria automotiva desenvolvido para monitoramento em tempo real d
 
 ---
 
-## 📐 Especificações Técnicas
+##  Especificações Técnicas
 
 | Parâmetro | Valor |
 |-----------|-------|
@@ -124,7 +124,7 @@ graph LR
     style F fill:#F44336,stroke:#333,stroke-width:2px
 ```
 
-## 📦 Instalação e Configuração
+##  Instalação e Configuração
 
 ### **Pré-requisitos**
 - Arduino IDE instalado
